@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Cálculo de Salário</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+</head>
+<style type="text/css"> 
+
+    body{
+        text-align: center;
+        font-family: 'Oswald', sans-serif;
+
+    }
+  
+ 
+
+  </style>
+<body >
+
+    
+        <div class="mb-1">
+          <label for="exampleInputEmail1" class="form-label"><h3>DIGITE SEU SALÁRIO BRUTO: </h3></label>
+          <input type="text" class="form-control" id="SalarioB" aria-describedby="emailHelp" name="txtSalarioB" >
+         
+        </div>
+        
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label"><h3> QUANTIDADE DE DEPENDENTES: </h3></label>
+          <input type="float" class="form-control" id="exampleInputPassword1" name="qtdeDependente" >
+        </div>
+    
+        <button type="submit" class="btn btn-primary" id="botao-calcular"> CALCULAR</button>
+      <br>
+      <br>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Seu Salario Bruto</th>
+            <th scope="col">Seus Descontos foram :</th>
+            <th scope="col">Salario Liquido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"></th>
+            <td  id="bruto"></td>
+            <td id="Descontos"></td>
+            <td  id="resultado" ></td>
+            
+          </tr>
+          
+        </tbody>
+      </table>
+
+
+      <table class="tabelaDadosEntrada table table-bordered table-hover mb-0">
+          <br>
+          <h4>DESCONTOS INSS</h4>
+          <br>
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Valor (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>
+                        De R$ 2.919,73 até R$ 5.839,45
+                    </td>
+                    <td>
+                        11,00
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Até R$ 1.751,81
+                    </td>
+                    <td>
+                        8,00
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        De R$ 1.751,82 a R$ 2.919,72
+                    </td>
+                    <td>
+                        9,00
+                    </td>
+                </tr>
+    
+        </tbody>
+    </table>
+    <br>
+    <h4>DESCONTOS IRRF</h4>
+    <br>
+    <table class="tabelaDadosEntrada table table-bordered table-hover mb-0">
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Valor (%)</th>
+                <th>Dedução</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>
+                        De 2.826,66 até 3.751,05
+                    </td>
+                    <td>
+                        15,00
+                    </td>
+                    <td>
+                        354,80
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Até 1.903,98
+                    </td>
+                    <td>
+                        0,00
+                    </td>
+                    <td>
+                        0,00
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Acima de 4.664,68
+                    </td>
+                    <td>
+                        27,50
+                    </td>
+                    <td>
+                        869,36
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        De 1.903,99 até 2.826,65
+                    </td>
+                    <td>
+                        7,50
+                    </td>
+                    <td>
+                        142,80
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        De 3.751,06 até 4.664,68
+                    </td>
+                    <td>
+                        22,50
+                    </td>
+                    <td>
+                        636,13
+                    </td>
+                </tr>
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">
+                    Dedução por dependente na determinação da base de cálculo do IRRF - 189,59
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    <BR>
+    
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+        $("#botao-calcular").click(function(){
+        const SalarioB = parseFloat(document.getElementById("SalarioB").value);
+        const numDependentes = parseInt(document.getElementsByName("qtdeDependente")[0].value);
+
+        var SalarioL = calcSL(SalarioB, numDependentes);
+        
+        var des = Desconto(SalarioB, numDependentes);
+
+        var Bruto= document.getElementById("bruto");
+        Bruto.textContent =  SalarioB;
+
+        var DD= document.getElementById("Descontos");
+        DD.textContent =  des;
+
+
+        var Resultado = document.getElementById("resultado");
+        Resultado.textContent =  SalarioL;
+    });
+
+
+    function AliqINSS(SalarioB) {
+        if (SalarioB <= 0) {
+            return 0;
+        }
+
+        if (SalarioB <= 1751.81) {
+            return 0.08;
+        }
+        else if (SalarioB >= 1751.82 || SalarioB <= 2919.73) {
+            return 0.09;
+        }
+        else {
+            return 0.11;
+        }
+    }
+
+    function DescINSS(SalarioB) {
+        const aliquota =AliqINSS(SalarioB);
+        return SalarioB * aliquota;
+    }
+
+    function CalcDependentes(qtdeDependente) {
+        const valorDeducaoPordependente = 189.59;
+        return qtdeDependente * valorDeducaoPordependente;
+    }
+
+    function CalcSB(SalarioB, numDependentes) {
+        var descontoINSS = DescINSS(SalarioB);
+        var deducaoDependentes = CalcDependentes(numDependentes);
+
+        return SalarioB - descontoINSS - deducaoDependentes;
+    }
+
+    function AliqIRRF(salarioBase) {
+        if (salarioBase <= 0) {
+            return 0;
+        }
+
+        if (salarioBase <= 1903.98) {
+            return 0;
+        }
+        else if (salarioBase >= 1903.99 || salarioBase <= 2826.65) {
+            return 0.075;
+        }
+        else if (salarioBase >= 2826.66 || salarioBase <= 3751.05) {
+            return 0.15;
+        }
+        else if (salarioBase >= 3751.06 || salarioBase <= 4664, 68) {
+            return 0.225;
+        }
+        else {
+            return 0.275;
+        }
+    }
+
+    function DeduIRRF(aliquota) {
+        if (aliquota <= 0) {
+            return 0;
+        }
+        else if (aliquota == 0.075) {
+            return 142.8;
+        }
+        else if (aliquota == 0.15) {
+            return 354.80;
+        }
+        else if (aliquota == 0.225) {
+            return 636.13;
+        }
+        else {
+            return 869.36;
+        }
+    }
+
+    function calcDescIRRPF(salarioBase) {
+        const aliquota = AliqIRRF(salarioBase);
+        const valorDeducao = DeduIRRF(aliquota);
+
+        return salarioBase * aliquota - valorDeducao;
+    }
+
+
+    
+
+
+
+    function calcSL(SalarioB, dependentes) {
+        var descontoINSS = DescINSS(SalarioB);
+
+        var salarioBase =CalcSB(SalarioB, dependentes);
+
+        var descontoIRRF = calcDescIRRPF(salarioBase);
+       
+
+        var conta = SalarioB - descontoINSS - descontoIRRF;
+        var arredondado = parseFloat(conta.toFixed(2));
+
+        return arredondado;
+       
+    }
+
+    function Desconto(SalarioB,salarioBase){
+        var descontoINSS = DescINSS(SalarioB);
+
+        var descontoIRRF = calcDescIRRPF(salarioBase);
+
+        var descontog =  descontoINSS + descontoIRRF;
+        var arredondado = parseFloat(descontog.toFixed(2));
+
+        return arredondado;
+    }
+
+      
+</script>
+</html>
+
+
+
